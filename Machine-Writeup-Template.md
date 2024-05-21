@@ -1,9 +1,13 @@
-# [Machine Name]
+# Needle
 
 ## Introduction
+Preface: This is my first time making a box for a platform. Even though i followed the best practises that were outlined on your forum and playing through my box in a number of ways i am sure that there are some issues and i would appreciate honest feedback
 
-[Include why you made this box, what skills and vulnerabilities you wanted to highlight, etc]
+I made this machine because most of the machines that i have played on htb that are windows dont seem to have a good defender detection. In most writeups and videos that i have watched of playthroughs even basic rev shells go through even though realistically defender should block them. I do not know however if these were exceptions. This machine is the newest (not beta) build with the most up to date defender signatures
+I feel like it would be refreshing for most players while also posing a challenge.
 
+For players who dont want to get into that i have made a insecure scheduled task that can be exploited to gain a SYSTEM shell.
+Users that are more confident in their skills in AV bypass/obfuscation/crypting can load a tool like mimikatz into memory to dump the SAM and decrypt the hashes.
 ## Info for HTB
 
 ### Access
@@ -12,32 +16,32 @@ Passwords:
 
 | User  | Password                            |
 | ----- | ----------------------------------- |
-| user1 | [pass phrase, not too hard to type] |
-| user2 | [pass phrase, not too hard to type] |
-| root  | [pass phrase, not too hard to type] |
+| joseph | 1997Cats1234asdf |
+| Administrator  | ijustlovecatsasd |
 
 ### Key Processes
 
-[Describe processes that are running to provide basic services on the box, such as web server, FTP, etc. **For any custom binaries, include the source code (in a separate file unless very short)**. Also, include if any of the services or programs are running intentionally vulnerable versions.]
+Disclaimer: Ideally i wanted to run a full microsoft ecosystem so that users could exploit microsoft SQLs xp functions to get a shell but i wasnt able to do that because of the htb limitation that forced me to only use a max of 20gbs for the machine (even the smallest sqlserver instance is 8GB by itself). But that is more than fine ill try to get your permission to go over the limit for my next machine for which i have a really nice idea.
+
+Running on this machine is xampp with php,mysql and apache. I havent installed anything else that isnt native to windows. 
 
 ### Automation / Crons
 
 [Describe any automation on the box:
 
-- What does it do?
-- Why? (necessary for exploit step, clean up, etc)
-- How does it do it? Provide source code (anything longer than a few lines in a separate attachment)
-- How does it run?
+-The only background service that i have configured is the one that runs the "cleanup.ps1" script in c:/cleanupscripts. That service runs on startup and following that repeats every 60 seconds.
+- Why? (necessary for exploit step, clean up, etc) Its the way to get SYSTEM on this machine. A user can hjack this process by injecting a rev shell into the script that gets run by SYSTEM in order to get the Admin shell
+- How does it do it? I configured it over Task Scheduler
 
 ]
 
 ### Firewall Rules
 
-[Describe any non-default firewall rules here]
+Only port 80 is accesible for inbound traffic.
 
 ### Docker
 
-[Describe how docker is used if at all. Attach Dockerfiles]
+Not used
 
 ### Other
 
@@ -47,17 +51,14 @@ Passwords:
 
 # Writeup
 
-[
-
-Provide an in-depth explanation of the steps it takes to complete the box from start to finish. Divide your walkthrough into the below sections and sub-sections and include images to guide the user through the exploitation. 
-
-Please also include screenshots of any visual elements (like websites) that are part of the submission. Our review team is not only evaluating the technical path, but the realism and story of the box.
-
-Show **all** specific commands using markdown's triple-backticks (```` ```bash ````) such that the reader can copy/paste them, and also show the commands' output through images or markdown code blocks (```` ``` ````). 
-
-**A reader should be able to solve the box entirely by copying and pasting the commands you provide.**
-
-]
+We start by opening the machine on needle.htb
+There really isnt anything other than placeholder html other then the login page at needle.htb/login.php.
+By trying to induce a SQL injection by trying to include a ' in the username or password parameter the user can find out the absolute path of the webdir which is:
+'''
+C:/xampp/htdocs/
+'''
+Some further heuristic tests let us know that UNION is usable. Nice this means that we can write content to arbitary files (if we have permissions).
+We do
 
 # Enumeration
 
